@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}{{ proposal.title }} — Voz del Ciudadano{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Propuesta #{{ proposal.proposal_id }}</li>
+    </ol>
+</nav>
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">{{ proposal.title }}</h2>
+        <p class="text-muted mb-0">{{ proposal.description }}</p>
+    </div>
+    <span class="badge badge-{{ proposal.status.name }} text-white px-3 py-2 rounded-pill fs-6">
+        {{ proposal.status.value }}
+    </span>
+</div>
+
+<div class="row g-4">
+
+    <!-- Columna izquierda: info + acciones -->
+    <div class="col-lg-4">
+
+        <!-- Contador de firmas -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title">Recolección de Firmas</p>
+                {% set pct = [(proposal.signature_count / 25000 * 100), 100]|min %}
+                <div class="text-center mb-3">
+                    <span class="display-5 fw-bold text-success">{{ "{:,}".format(proposal.signature_count) }}</span>
+                    <span class="text-muted fs-5"> / 25,000</span>
+                </div>
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" style="width: {{ pct }}%">
+                        {{ "%.1f"|format(pct) }}%
+                    </div>
+                </div>
+                <p class="text-muted small text-center mb-0">
+                    <i class="bi bi-clock me-1"></i>
+                    {% if proposal.status.name == 'ACTIVE' %}
+                        {{ proposal.days_remaining }} días restantes de 90
+                    {% else %}
+                        Período de firma cerrado
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Firmar propuesta -->
+        {% if proposal.status.name == 'ACTIVE' %}
+        <div class="card shadow-sm mb-4 border-success">
+            <div class="card-body">
+                <p class="section-title">Firmar esta Propuesta</p>
+                <p class="text-muted small">
+                    <i class="bi bi-shield-lock me-1"></i>
+                    Solo ciudadanos verificados pueden firmar.
+                    El <strong>Proxy</strong> valida el acceso.
+                </p>
+                <form method="POST" action="{{ url_for('sign_proposal', proposal_id=proposal.proposal_id) }}">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">ID de Ciudadano</label>
+                        <select name="citizen_id" class="form-select form-select-sm" required>
+                            <option value="">Selecciona ciudadano...</option>
+                            <option value="1">1 — Ana López (verificada)</option>
+                            <option value="2">2 — Carlos Méndez (verificado)</option>
+                            <option value="3">3 — María García (verificada)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-pen me-1"></i>Firmar Propuesta
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Hash criptográfico si está congelada -->
+        {% if proposal.crypto_hash %}
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-body">
+                <p class="section-title"><i class="bi bi-lock-fill me-1"></i>Sellado Criptográfico</p>
+                <p class="text-muted small mb-2">
+                    Documento congelado el {{ proposal.frozen_at.strftime('%d/%m/%Y %H:%M') }}
+                </p>
+                <code class="small" style="word-break:break-all;">{{ proposal.crypto_hash }}</code>
+                <div class="mt-2">
+                    <span class="badge bg-purple text-white" style="background:#6f42c1!important">
+                        {{ proposal.status.value }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Añadir comentario -->
+        {% if proposal.status.name == 'ACTIVE' %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title"><i class="bi bi-layers me-1"></i>Comentario (Decorator)</p>
+                <form method="POST" action="{{ url_for('add_comment', proposal_id=proposal.proposal_id) }}">
+                    <div class="mb-2">
+                        <input type="text" name="author" class="form-control form-control-sm"
+                               placeholder="Tu nombre" required maxlength="100">
+                    </div>
+                    <div class="mb-2">
+                        <textarea name="text" class="form-control form-control-sm" rows="3"
+                                  placeholder="Escribe tu comentario..." required maxlength="1000"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-chat-left-text me-1"></i>Añadir Comentario
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Añadir recurso -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title"><i class="bi bi-link-45deg me-1"></i>Recurso de Apoyo (Decorator)</p>
+                <form method="POST" action="{{ url_for('add_resource', proposal_id=proposal.proposal_id) }}">
+                    <div class="mb-2">
+                        <input type="text" name="title" class="form-control form-control-sm"
+                               placeholder="Título del recurso" required>
+                    </div>
+                    <div class="mb-2">
+                        <input type="url" name="url" class="form-control form-control-sm"
+                               placeholder="https://..." required>
+                    </div>
+                    <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                        <i class="bi bi-plus-circle me-1"></i>Añadir Recurso
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Columna derecha: contenido de la propuesta -->
+    <div class="col-lg-8">
+
+        <!-- Texto normativo -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title"><i class="bi bi-file-text me-1"></i>Texto del Proyecto de Ley</p>
+                <div style="white-space: pre-wrap; font-size: .92rem; line-height: 1.7;">{{ proposal.body }}</div>
+            </div>
+        </div>
+
+        <!-- Árbol Composite del documento -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title">
+                    <i class="bi bi-diagram-3 me-1"></i>
+                    Árbol Composite del Documento
+                    <span class="badge bg-secondary ms-2">{{ document.count() }} nodos</span>
+                </p>
+                <div class="tree-box">{{ document.render() }}</div>
+                <p class="text-muted small mt-2 mb-0">
+                    Patrón <strong>Composite</strong>: el documento es un árbol de
+                    <code>ProposalSection</code> (nodos) y <code>ProposalLeaf</code> (hojas).
+                </p>
+            </div>
+        </div>
+
+        <!-- Comentarios -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title">
+                    <i class="bi bi-chat-left-text me-1"></i>
+                    Comentarios
+                    <span class="badge bg-secondary ms-1">{{ proposal.comments|length }}</span>
+                </p>
+                {% if proposal.comments %}
+                    {% for c in proposal.comments %}
+                    <div class="d-flex gap-3 mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                             style="width:38px;height:38px;min-width:38px;font-weight:700;">
+                            {{ c.author[0]|upper }}
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold small">{{ c.author }}
+                                <span class="text-muted fw-normal">
+                                    — {{ c.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                </span>
+                            </p>
+                            <p class="mb-0">{{ c.text }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small">Sin comentarios aún.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recursos -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title">
+                    <i class="bi bi-link-45deg me-1"></i>
+                    Recursos de Apoyo
+                    <span class="badge bg-secondary ms-1">{{ proposal.resources|length }}</span>
+                </p>
+                {% if proposal.resources %}
+                    <ul class="list-group list-group-flush">
+                    {% for r in proposal.resources %}
+                        <li class="list-group-item px-0">
+                            <i class="bi bi-box-arrow-up-right text-success me-2"></i>
+                            <a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a>
+                            <small class="text-muted d-block mt-1">{{ r.url }}</small>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted small">Sin recursos añadidos.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Modificaciones -->
+        {% if proposal.modifications %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="section-title">
+                    <i class="bi bi-pencil-square me-1"></i>
+                    Modificaciones
+                    <span class="badge bg-secondary ms-1">{{ proposal.modifications|length }}</span>
+                </p>
+                {% for m in proposal.modifications %}
+                <div class="border-start border-warning border-3 ps-3 mb-3">
+                    <p class="fw-semibold mb-1 small">{{ m.description }}</p>
+                    <p class="mb-0 text-muted small">{{ m.new_text }}</p>
+                    <small class="text-muted">{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
