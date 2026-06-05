@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Voz del Ciudadano{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Propuestas Legislativas</h2>
+        <p class="text-muted mb-0">Iniciativas ciudadanas activas ante el Congreso de la República</p>
+    </div>
+    <span class="badge bg-secondary fs-6">{{ proposals|length }} propuesta(s)</span>
+</div>
+
+{% if not proposals %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-inbox fs-1"></i>
+    <p class="mt-2">No hay propuestas registradas aún.</p>
+</div>
+{% endif %}
+
+<div class="row g-4">
+{% for p in proposals %}
+{% set pct = [(p.signature_count / 25000 * 100), 100]|min %}
+<div class="col-12">
+    <div class="card card-proposal shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h5 class="card-title mb-1 fw-semibold">{{ p.title }}</h5>
+                    <p class="text-muted small mb-2">{{ p.description }}</p>
+                </div>
+                <span class="badge badge-{{ p.status.name }} text-white px-3 py-2 rounded-pill">
+                    {{ p.status.value }}
+                </span>
+            </div>
+
+            <!-- Barra de progreso de firmas -->
+            <div class="mb-2">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                    <span><i class="bi bi-pen me-1"></i>{{ "{:,}".format(p.signature_count) }} firmas</span>
+                    <span>Meta: 25,000</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar
+                        {% if p.status.name == 'ACTIVE' %}bg-success
+                        {% elif p.status.name == 'FROZEN' %}bg-primary
+                        {% else %}bg-secondary{% endif %}"
+                        role="progressbar"
+                        style="width: {{ pct }}%">
+                        {{ "%.1f"|format(pct) }}%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meta información -->
+            <div class="d-flex flex-wrap gap-3 mt-3 small text-muted align-items-center">
+                <span><i class="bi bi-clock me-1"></i>
+                    {% if p.status.name == 'ACTIVE' %}
+                        {{ p.days_remaining }} días restantes
+                    {% else %}
+                        Plazo finalizado
+                    {% endif %}
+                </span>
+                <span><i class="bi bi-chat-left-text me-1"></i>{{ p.comments|length }} comentarios</span>
+                <span><i class="bi bi-link-45deg me-1"></i>{{ p.resources|length }} recursos</span>
+                <span><i class="bi bi-pencil-square me-1"></i>{{ p.modifications|length }} modificaciones</span>
+
+                <a href="{{ url_for('proposal_detail', proposal_id=p.proposal_id) }}"
+                   class="btn btn-sm btn-outline-primary ms-auto">
+                    Ver detalle <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <!-- Hash si está congelada -->
+            {% if p.crypto_hash %}
+            <div class="mt-2 p-2 rounded bg-light">
+                <small class="text-muted"><i class="bi bi-lock-fill text-primary me-1"></i>
+                    SHA-256: <code>{{ p.crypto_hash }}</code>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+<!-- Panel informativo de patrones -->
+<div class="card mt-5 border-0 shadow-sm">
+    <div class="card-body">
+        <p class="section-title">Patrones Estructurales Implementados</p>
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md">
+                <div class="p-3 rounded bg-light h-100">
+                    <i class="bi bi-diagram-3 fs-4 text-primary"></i>
+                    <p class="mb-0 mt-1 small fw-semibold">Composite</p>
+                    <p class="mb-0 text-muted" style="font-size:.75rem">Árbol del documento</p>
+                </div>
+            </div>
+            <div class="col-6 col-md">
+                <div class="p-3 rounded bg-light h-100">
+                    <i class="bi bi-shield-lock fs-4 text-danger"></i>
+                    <p class="mb-0 mt-1 small fw-semibold">Proxy</p>
+                    <p class="mb-0 text-muted" style="font-size:.75rem">Control de acceso</p>
+                </div>
+            </div>
+            <div class="col-6 col-md">
+                <div class="p-3 rounded bg-light h-100">
+                    <i class="bi bi-layers fs-4 text-success"></i>
+                    <p class="mb-0 mt-1 small fw-semibold">Decorator</p>
+                    <p class="mb-0 text-muted" style="font-size:.75rem">Comentarios y recursos</p>
+                </div>
+            </div>
+            <div class="col-6 col-md">
+                <div class="p-3 rounded bg-light h-100">
+                    <i class="bi bi-arrow-left-right fs-4 text-warning"></i>
+                    <p class="mb-0 mt-1 small fw-semibold">Adapter</p>
+                    <p class="mb-0 text-muted" style="font-size:.75rem">Verificación de identidad</p>
+                </div>
+            </div>
+            <div class="col-6 col-md">
+                <div class="p-3 rounded bg-light h-100">
+                    <i class="bi bi-grid-1x2 fs-4 text-info"></i>
+                    <p class="mb-0 mt-1 small fw-semibold">Facade</p>
+                    <p class="mb-0 text-muted" style="font-size:.75rem">Orquesta todo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
