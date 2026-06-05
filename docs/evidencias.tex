@@ -1,0 +1,179 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Paquetes ──────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{mdframed}
+
+\geometry{margin=2.5cm}
+
+% ── Colores institucionales ───────────────────────────────────────────────
+\definecolor{azulcongreso}{RGB}{26, 58, 107}
+\definecolor{dorado}{RGB}{200, 169, 81}
+\definecolor{grisclaro}{RGB}{245, 246, 249}
+\definecolor{verdepasado}{RGB}{25, 135, 84}
+\definecolor{rojopasado}{RGB}{220, 53, 69}
+
+% ── Encabezado y pie de página ────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{azulcongreso}{\textbf{Voz del Ciudadano}}}
+\fancyhead[R]{\small\textcolor{gray}{Curso: Desarrollo de Software}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Estilo de secciones ───────────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{azulcongreso}}
+  {\thesection.}{0.5em}{}[\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{azulcongreso}}
+  {\thesubsection.}{0.5em}{}
+
+% ── Caja para descripción de evidencia ───────────────────────────────────
+\newmdenv[
+  backgroundcolor=grisclaro,
+  linecolor=azulcongreso,
+  linewidth=1.5pt,
+  leftline=true, rightline=false, topline=false, bottomline=false,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+]{evidenciabox}
+
+% ── Comando para figura con descripción ───────────────────────────────────
+% Uso: \evidencia{archivo}{título}{descripción larga}
+\newcommand{\evidencia}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{#1}
+    \caption{\textbf{#2}}
+  \end{figure}
+  \begin{evidenciabox}
+    \textbf{Descripción:} #3
+  \end{evidenciabox}
+  \vspace{1em}
+}
+
+% ══════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════
+
+% ── Portada ───────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\Huge\bfseries\color{azulcongreso} Voz del Ciudadano \par}
+  \vspace{0.5cm}
+  {\large Plataforma de Iniciativas Legislativas Ciudadanas \par}
+  \vspace{2cm}
+  \rule{\linewidth}{1pt}
+  \vspace{0.5cm}
+
+  {\LARGE\bfseries Evidencias del Proyecto \par}
+  \vspace{0.3cm}
+  {\large Patrones Estructurales de Diseño de Software \par}
+
+  \vspace{0.5cm}
+  \rule{\linewidth}{1pt}
+  \vspace{2cm}
+
+  \begin{tabular}{ll}
+    \textbf{Curso:}       & Desarrollo de Software \\[4pt]
+    \textbf{Proyecto:}    & PC3 — Sistema Voz del Ciudadano \\[4pt]
+    \textbf{Tecnología:}  & Python 3.11 + Flask + Bootstrap 5 \\[4pt]
+    \textbf{Repositorio:} & \href{https://github.com/AndreSanchezVega/DS-PC3}{github.com/AndreSanchezVega/DS-PC3} \\[4pt]
+    \textbf{Fecha:}       & \today \\
+  \end{tabular}
+
+  \vspace{2cm}
+  {\large\bfseries Patrones implementados \par}
+  \vspace{0.5cm}
+  \begin{tabular}{ccccc}
+    \textcolor{azulcongreso}{\textbf{Composite}} &
+    \textcolor{azulcongreso}{\textbf{Proxy}} &
+    \textcolor{azulcongreso}{\textbf{Decorator}} &
+    \textcolor{azulcongreso}{\textbf{Adapter}} &
+    \textcolor{azulcongreso}{\textbf{Facade}} \\
+  \end{tabular}
+\end{titlepage}
+
+% ── Tabla de contenidos ───────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Repositorio GitHub}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Página principal del repositorio}
+% \evidencia{img/repo_main.png}{Página principal del repositorio DS-PC3}{...}
+% PENDIENTE — agregar captura
+
+\subsection{Pull Requests cerrados}
+% \evidencia{img/prs_closed.png}{Historial de Pull Requests}{...}
+% PENDIENTE — agregar captura
+
+\subsection{Red de ramas (Network Graph)}
+% \evidencia{img/network.png}{Network Graph — árbol de ramas y commits}{...}
+% PENDIENTE — agregar captura
+
+\subsection{Historial de commits en main}
+% \evidencia{img/commits_main.png}{Historial de commits en la rama main}{...}
+% PENDIENTE — agregar captura
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Demo de la Aplicación}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Pantalla 1 — Dashboard}
+% \evidencia{img/dashboard.png}{Dashboard con listado de propuestas}{...}
+% PENDIENTE — agregar captura
+
+\subsection{Pantalla 2 — Detalle de Propuesta}
+% \evidencia{img/detalle.png}{Detalle de propuesta con árbol Composite}{...}
+% PENDIENTE — agregar captura
+
+\subsection{Patrón Proxy — Firma exitosa}
+% \evidencia{img/firma_ok.png}{Firma registrada exitosamente (Proxy permite acceso)}{...}
+% PENDIENTE — agregar captura
+
+\subsection{Patrón Proxy — Error de acceso}
+% \evidencia{img/firma_error.png}{Error al intentar firma duplicada (Proxy bloquea)}{...}
+% PENDIENTE — agregar captura
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Pruebas Automatizadas}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Ejecución de pytest — 22 casos de prueba}
+% \evidencia{img/pytest.png}{Resultado de pytest con 22 casos pasados}{...}
+% PENDIENTE — agregar captura
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Código Fuente — Patrones}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Archivos de patrones en GitHub}
+% \evidencia{img/patterns_folder.png}{Carpeta src/patterns/ con los 5 patrones}{...}
+% PENDIENTE — agregar captura
+
+% ══════════════════════════════════════════════════════════════════════════
+\end{document}
+% ══════════════════════════════════════════════════════════════════════════
